@@ -1,0 +1,62 @@
+<!-- app/views/subscriptions/new.html.erb -->
+<h2>Choose a Subscription Plan</h2>
+
+<div>
+  <input
+    type="radio"
+    name="plan"
+    value="3"
+    checked="checked"
+  />
+  <label>3 posts per day - $3</label>
+</div>
+<div>
+  <input
+    type="radio"
+    name="plan"
+    value="5"
+  />
+  <label>5 posts per day - $5</label>
+</div>
+<div>
+  <input
+    type="radio"
+    name="plan"
+    value="10"
+  />
+  <label>10 posts per day - $10</label>
+</div>
+
+<button id="subscribe-button">Subscribe</button>
+
+<!-- Include Stripe.js and create a script to handle subscription with Stripe -->
+<script src="https://js.stripe.com/v3/"></script>
+<script>
+  // Set your Stripe publishable key
+  const stripe = Stripe('pk_test_51NehkxSB1y27lqYj2hV9vRWQGG7NghkpBQJTKWJFQmgba0pXAEqO7oUfJUhh3ZXiXDxlCTymJndH5hgaM3KV8cva00Nb6JgeCN');
+
+  // Handle subscription button click
+  const subscribeButton = document.getElementById('subscribe-button');
+  subscribeButton.addEventListener('click', async () => {
+    const planId = document.querySelector('input[name="plan"]:checked').value;
+
+    // Create a customer and subscription using Stripe
+    const response = await fetch('/subscriptions/create', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-Token': '<%= form_authenticity_token %>'
+      },
+      body: JSON.stringify({
+        plan_id: planId
+      })
+    });
+
+    // Redirect to success or error page based on the response
+    if (response.ok) {
+      window.location.href = '/subscriptions/success'; // Change to your success page
+    } else {
+      window.location.href = '/subscriptions/error'; // Change to your error page
+    }
+  });
+</script>
